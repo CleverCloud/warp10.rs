@@ -43,11 +43,11 @@ impl Warp10Serializable for Warp10GeoValue {
 
 #[derive(Debug)]
 pub struct Warp10Data {
-    date:   Timespec,
-    geo:    Option<Warp10GeoValue>,
-    name:   String,
-    labels: Vec<(String, String)>,
-    value:  Warp10Value
+    pub date:   Timespec,
+    pub geo:    Option<Warp10GeoValue>,
+    pub name:   String,
+    pub labels: Vec<(String, String)>,
+    pub value:  Warp10Value
 }
 
 fn url_encode_pair(key: &str, value: &str) -> String {
