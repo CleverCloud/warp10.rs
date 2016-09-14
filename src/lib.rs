@@ -3,10 +3,10 @@ extern crate hyper;
 extern crate time;
 extern crate url;
 
-//mod client;
+mod client;
 mod data;
 mod error;
 
-//pub use client::*;
+pub use client::*;
 pub use data::*;
 pub use error::*;
