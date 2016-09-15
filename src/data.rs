@@ -30,9 +30,19 @@ impl Warp10Serializable for Warp10Value {
 
 #[derive(Debug)]
 pub struct Warp10GeoValue {
-    pub lat: f64,
-    pub lon: f64,
-    pub alt: Option<f64>
+    lat: f64,
+    lon: f64,
+    alt: Option<f64>
+}
+
+impl Warp10GeoValue {
+    pub fn new(lat: f64, lon: f64, alt: Option<f64>) -> Warp10GeoValue {
+        Warp10GeoValue {
+            lat: lat,
+            lon: lon,
+            alt: alt
+        }
+    }
 }
 
 impl Warp10Serializable for Warp10GeoValue {
@@ -43,11 +53,23 @@ impl Warp10Serializable for Warp10GeoValue {
 
 #[derive(Debug)]
 pub struct Warp10Data {
-    pub date:   Timespec,
-    pub geo:    Option<Warp10GeoValue>,
-    pub name:   String,
-    pub labels: Vec<(String, String)>,
-    pub value:  Warp10Value
+    date:   Timespec,
+    geo:    Option<Warp10GeoValue>,
+    name:   String,
+    labels: Vec<(String, String)>,
+    value:  Warp10Value
+}
+
+impl Warp10Data {
+    pub fn new(date: Timespec, geo: Option<Warp10GeoValue>, name: String, labels: Vec<(String, String)>, value: Warp10Value) -> Warp10Data {
+        Warp10Data {
+            date:   date,
+            geo:    geo,
+            name:   name,
+            labels: labels,
+            value:  value
+        }
+    }
 }
 
 fn url_encode_pair(key: &str, value: &str) -> String {
@@ -106,37 +128,13 @@ mod tests {
 
     #[test]
     fn serialize_geo() {
-        assert_eq!(Warp10GeoValue {
-            lat: 42.66,
-            lon: 32.85,
-            alt: None
-        }.warp10_serialize(), "42.66:32.85/" );
-        assert_eq!(Warp10GeoValue {
-            lat: 42.66,
-            lon: 32.85,
-            alt: Some(10.2)
-        }.warp10_serialize(), "42.66:32.85/10.2");
+        assert_eq!(Warp10GeoValue::new(42.66, 32.85, None).warp10_serialize(), "42.66:32.85/");
+        assert_eq!(Warp10GeoValue::new(42.66, 32.85, Some(10.2)).warp10_serialize(), "42.66:32.85/10.2");
     }
 
     #[test]
     fn serialize_data() {
-        assert_eq!(Warp10Data {
-            date:   Timespec::new(25, 123456789),
-            geo:    None,
-            name:   "original name".to_string(),
-            labels: vec![("label1".to_string(), "value1".to_string()), ("label 2".to_string(), "value 2".to_string())],
-            value:  Warp10Value::String("foobar".to_string())
-        }.warp10_serialize(), "25123456// original+name{label1=value1,label+2=value+2} 'foobar'");
-        assert_eq!(Warp10Data {
-            date:   Timespec::new(25, 123456789),
-            geo:    Some(Warp10GeoValue {
-                lat: 42.66,
-                lon: 32.85,
-                alt: Some(10.2)
-            }),
-            name:   "original name".to_string(),
-            labels: vec![("label1".to_string(), "value1".to_string()), ("label 2".to_string(), "value 2".to_string())],
-            value:  Warp10Value::String("foobar".to_string())
-        }.warp10_serialize(), "25123456/42.66:32.85/10.2 original+name{label1=value1,label+2=value+2} 'foobar'");
+        assert_eq!(Warp10Data::new(Timespec::new(25, 123456789), None, "original name".to_string(), vec![("label1".to_string(), "value1".to_string()), ("label 2".to_string(), "value 2".to_string())], Warp10Value::String("foobar".to_string())).warp10_serialize(), "25123456// original+name{label1=value1,label+2=value+2} 'foobar'");
+        assert_eq!(Warp10Data::new(Timespec::new(25, 123456789), Some(Warp10GeoValue::new(42.66, 32.85, Some(10.2))), "original name".to_string(), vec![("label1".to_string(), "value1".to_string()), ("label 2".to_string(), "value 2".to_string())], Warp10Value::String("foobar".to_string())).warp10_serialize(), "25123456/42.66:32.85/10.2 original+name{label1=value1,label+2=value+2} 'foobar'");
     }
 }
