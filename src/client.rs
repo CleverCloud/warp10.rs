@@ -7,13 +7,13 @@ use data::*;
 use error::*;
 
 #[derive(Debug)]
-pub struct Warp10Client<'a> {
+pub struct Warp10Client {
     url:   Url,
-    token: &'a str
+    token: String,
 }
 
-impl<'a> Warp10Client<'a> {
-    pub fn new(url: Url, token: &'a str) -> Warp10Client<'a> {
+impl Warp10Client {
+    pub fn new(url: Url, token: String) -> Warp10Client {
         Warp10Client {
             url:   url,
             token: token
@@ -27,7 +27,7 @@ impl<'a> Warp10Client<'a> {
             hostname: self.url.host_str().unwrap_or("localhost").to_string(),
             port:     self.url.port()
         });
-        headers.set_raw("X-Warp10-Token", vec![self.token.as_bytes().to_vec()]);
+        headers.set_raw("X-Warp10-Token", vec![self.token.clone().into_bytes()]);
         headers
     }
 
