@@ -33,8 +33,12 @@ impl<'a> Warp10Client<'a> {
 
     pub fn post(&self, data: Vec<Warp10Data>) -> Result<Response> {
         let body = data.iter().map(|d| d.warp10_serialize()).join("\n");
-        let url  = try!(self.url.join("/api/v0/update"));
-        let resp = try!(Client::new().post(url).headers(self.get_headers()).body(Body::BufBody(body.as_bytes(), body.len())).send());
+        let url = try!(self.url.join("/api/v0/update"));
+        let resp = try!(Client::new()
+            .post(url)
+            .headers(self.get_headers())
+            .body(Body::BufBody(body.as_bytes(), body.len()))
+            .send());
         Ok(resp)
     }
 }
