@@ -6,38 +6,42 @@ pub trait Warp10Serializable {
     fn warp10_serialize(&self) -> String;
 }
 
+pub type Int     = i32;
+pub type Long    = i64;
+pub type Double  = f64;
+pub type Boolean = bool;
+
 #[derive(Debug)]
-pub enum Warp10Value {
-    Int(i32),
-    Long(i64),
-    Double(f64),
-    Boolean(bool),
+pub enum Value {
+    Int(Int),
+    Long(Long),
+    Double(Double),
+    Boolean(Boolean),
     String(String),
 }
 
-impl Warp10Serializable for Warp10Value {
+impl Warp10Serializable for Value {
     fn warp10_serialize(&self) -> String {
-        use Warp10Value::*;
         match *self {
-            Int(i)        => i.to_string(),
-            Long(l)       => l.to_string(),
-            Double(d)     => d.to_string(),
-            Boolean(b)    => b.to_string(),
-            String(ref s) => format!("'{}'", s)
+            Value::Int(i)        => i.to_string(),
+            Value::Long(l)       => l.to_string(),
+            Value::Double(d)     => d.to_string(),
+            Value::Boolean(b)    => b.to_string(),
+            Value::String(ref s) => format!("'{}'", s)
         }
     }
 }
 
 #[derive(Debug)]
-pub struct Warp10GeoValue {
-    lat:  f64,
-    lon:  f64,
-    elev: Option<i64>,
+pub struct GeoValue {
+    lat:  Double,
+    lon:  Double,
+    elev: Option<Long>,
 }
 
-impl Warp10GeoValue {
-    pub fn new(lat: f64, lon: f64, elev: Option<i64>) -> Warp10GeoValue {
-        Warp10GeoValue {
+impl GeoValue {
+    pub fn new(lat: Double, lon: Double, elev: Option<Long>) -> GeoValue {
+        GeoValue {
             lat:  lat,
             lon:  lon,
             elev: elev,
@@ -45,7 +49,7 @@ impl Warp10GeoValue {
     }
 }
 
-impl Warp10Serializable for Warp10GeoValue {
+impl Warp10Serializable for GeoValue {
     fn warp10_serialize(&self) -> String {
         format!("{}:{}/{}",
                 self.lat,
@@ -55,22 +59,22 @@ impl Warp10Serializable for Warp10GeoValue {
 }
 
 #[derive(Debug)]
-pub struct Warp10Data {
+pub struct Data {
     date:   Timespec,
-    geo:    Option<Warp10GeoValue>,
+    geo:    Option<GeoValue>,
     name:   String,
     labels: Vec<(String, String)>,
-    value:  Warp10Value,
+    value:  Value,
 }
 
-impl Warp10Data {
+impl Data {
     pub fn new(date:   Timespec,
-               geo:    Option<Warp10GeoValue>,
+               geo:    Option<GeoValue>,
                name:   String,
                labels: Vec<(String, String)>,
-               value:  Warp10Value)
-               -> Warp10Data {
-        Warp10Data {
+               value:  Value)
+               -> Data {
+        Data {
             date:   date,
             geo:    geo,
             name:   name,
@@ -86,9 +90,9 @@ fn url_encode(input: &str) -> String {
     s
 }
 
-impl Warp10Serializable for Warp10Data {
+impl Warp10Serializable for Data {
     fn warp10_serialize(&self) -> String {
-        let date_ms = self.date.sec * 1000000 + (self.date.nsec as i64) / 1000;
+        let date_ms = self.date.sec * 1000000 + (self.date.nsec as Long) / 1000;
         let geo = match &self.geo {
             &None        => "/".to_string(),
             &Some(ref g) => g.warp10_serialize()
@@ -111,55 +115,55 @@ mod tests {
 
     #[test]
     fn serialize_int() {
-        assert_eq!(Warp10Value::Int(42).warp10_serialize(), "42");
+        assert_eq!(Value::Int(42).warp10_serialize(), "42");
     }
 
     #[test]
     fn serialize_long() {
-        assert_eq!(Warp10Value::Long(42).warp10_serialize(), "42");
+        assert_eq!(Value::Long(42).warp10_serialize(), "42");
     }
 
     #[test]
     fn serialize_double() {
-        assert_eq!(Warp10Value::Double(42.66).warp10_serialize(), "42.66");
+        assert_eq!(Value::Double(42.66).warp10_serialize(), "42.66");
     }
 
     #[test]
     fn serialize_boolean() {
-        assert_eq!(Warp10Value::Boolean(true).warp10_serialize(), "true");
-        assert_eq!(Warp10Value::Boolean(false).warp10_serialize(), "false");
+        assert_eq!(Value::Boolean(true).warp10_serialize(), "true");
+        assert_eq!(Value::Boolean(false).warp10_serialize(), "false");
     }
 
     #[test]
     fn serialize_string() {
-        assert_eq!(Warp10Value::String("foobar".to_string()).warp10_serialize(),
+        assert_eq!(Value::String("foobar".to_string()).warp10_serialize(),
                    "'foobar'");
     }
 
     #[test]
     fn serialize_geo() {
-        assert_eq!(Warp10GeoValue::new(42.66, 32.85, None).warp10_serialize(),
+        assert_eq!(GeoValue::new(42.66, 32.85, None).warp10_serialize(),
                    "42.66:32.85/");
-        assert_eq!(Warp10GeoValue::new(42.66, 32.85, Some(10)).warp10_serialize(),
+        assert_eq!(GeoValue::new(42.66, 32.85, Some(10)).warp10_serialize(),
                    "42.66:32.85/10");
     }
 
     #[test]
     fn serialize_data() {
-        assert_eq!(Warp10Data::new(Timespec::new(25, 123456789),
+        assert_eq!(Data::new(Timespec::new(25, 123456789),
                                    None,
                                    "original name".to_string(),
                                    vec![("label1".to_string(), "value1".to_string()),
                                         ("label 2".to_string(), "value 2".to_string())],
-                                   Warp10Value::String("foobar".to_string()))
+                                   Value::String("foobar".to_string()))
                        .warp10_serialize(),
                    "25123456// original name{label1=value1,label 2=value 2} 'foobar'");
-        assert_eq!(Warp10Data::new(Timespec::new(25, 123456789),
-                                   Some(Warp10GeoValue::new(42.66, 32.85, Some(10))),
+        assert_eq!(Data::new(Timespec::new(25, 123456789),
+                                   Some(GeoValue::new(42.66, 32.85, Some(10))),
                                    "original name".to_string(),
                                    vec![("label1".to_string(), "value1".to_string()),
                                         ("label 2".to_string(), "value 2".to_string())],
-                                   Warp10Value::String("foobar".to_string()))
+                                   Value::String("foobar".to_string()))
                        .warp10_serialize(),
                    "25123456/42.66:32.85/10 original name{label1=value1,label 2=value 2} 'foobar'");
     }

@@ -1,21 +1,20 @@
-use hyper::client::{Body, Client, Response};
+use hyper::{client, Url};
 use hyper::header::{Headers, ContentType, Host};
-use hyper::Url;
 use itertools::Itertools;
 
 use data::*;
 use error::*;
 
 #[derive(Debug)]
-pub struct Warp10Client {
+pub struct Client {
     url:   Url,
     token: String,
 }
 
-impl Warp10Client {
-    pub fn new(url: String, token: String) -> Result<Warp10Client> {
+impl Client {
+    pub fn new(url: String, token: String) -> Result<Client> {
         let real_url = try!(Url::parse(&url));
-        Ok(Warp10Client {
+        Ok(Client {
             url:   real_url,
             token: token
         })
@@ -32,13 +31,13 @@ impl Warp10Client {
         headers
     }
 
-    pub fn post(&self, data: Vec<Warp10Data>) -> Result<Response> {
+    pub fn post(&self, data: Vec<Data>) -> Result<client::Response> {
         let body = data.iter().map(|d| d.warp10_serialize()).join("\n");
         let url = try!(self.url.join("/api/v0/update"));
-        let resp = try!(Client::new()
+        let resp = try!(client::Client::new()
             .post(url)
             .headers(self.get_headers())
-            .body(Body::BufBody(body.as_bytes(), body.len()))
+            .body(client::Body::BufBody(body.as_bytes(), body.len()))
             .send());
         Ok(resp)
     }
