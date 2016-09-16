@@ -1,5 +1,7 @@
 # This is a Rust client for [Warp10 Geo/time series DB](http://www.warp10.io/)
 
+[![Build Status](https://travis-ci.org/CleverCloud/warp10.rs.svg?branch=master)](https://travis-ci.org/CleverCloud/warp10.rs)
+
 ## Features
 
 At the moment, we support writing to warp10.
