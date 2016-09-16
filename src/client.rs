@@ -13,11 +13,12 @@ pub struct Warp10Client {
 }
 
 impl Warp10Client {
-    pub fn new(url: Url, token: String) -> Warp10Client {
-        Warp10Client {
-            url:   url,
+    pub fn new(url: String, token: String) -> Result<Warp10Client> {
+        let real_url = try!(Url::parse(&url));
+        Ok(Warp10Client {
+            url:   real_url,
             token: token
-        }
+        })
     }
 
     fn get_headers(&self) -> Headers {
