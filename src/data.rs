@@ -1,6 +1,6 @@
 use itertools::Itertools;
 use time::Timespec;
-use url::form_urlencoded;
+use url::percent_encoding;
 
 pub trait Warp10Serializable {
     fn warp10_serialize(&self) -> String;
@@ -80,13 +80,9 @@ impl Warp10Data {
     }
 }
 
-fn url_encode_pair(key: &str, value: &str) -> String {
-    form_urlencoded::Serializer::new(String::new()).append_pair(key, value).finish()
-}
-
 fn url_encode(input: &str) -> String {
     let mut s = String::new();
-    s.extend(form_urlencoded::byte_serialize(input.as_bytes()));
+    s.extend(percent_encoding::utf8_percent_encode(input, percent_encoding::SIMPLE_ENCODE_SET));
     s
 }
 
@@ -97,7 +93,7 @@ impl Warp10Serializable for Warp10Data {
             &None        => "/".to_string(),
             &Some(ref g) => g.warp10_serialize()
         };
-        let labels = self.labels.iter().map(|&(ref k, ref v)| url_encode_pair(k, v)).join(",");
+        let labels = self.labels.iter().map(|&(ref k, ref v)| format!("{}={}", url_encode(k), url_encode(v))).join(",");
         format!("{}/{} {}{{{}}} {}",
                 date_ms,
                 geo,
@@ -157,7 +153,7 @@ mod tests {
                                         ("label 2".to_string(), "value 2".to_string())],
                                    Warp10Value::String("foobar".to_string()))
                        .warp10_serialize(),
-                   "25123456// original+name{label1=value1,label+2=value+2} 'foobar'");
+                   "25123456// original name{label1=value1,label 2=value 2} 'foobar'");
         assert_eq!(Warp10Data::new(Timespec::new(25, 123456789),
                                    Some(Warp10GeoValue::new(42.66, 32.85, Some(10))),
                                    "original name".to_string(),
@@ -165,6 +161,6 @@ mod tests {
                                         ("label 2".to_string(), "value 2".to_string())],
                                    Warp10Value::String("foobar".to_string()))
                        .warp10_serialize(),
-                   "25123456/42.66:32.85/10 original+name{label1=value1,label+2=value+2} 'foobar'");
+                   "25123456/42.66:32.85/10 original name{label1=value1,label 2=value 2} 'foobar'");
     }
 }
