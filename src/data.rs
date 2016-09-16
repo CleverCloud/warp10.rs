@@ -30,17 +30,17 @@ impl Warp10Serializable for Warp10Value {
 
 #[derive(Debug)]
 pub struct Warp10GeoValue {
-    lat: f64,
-    lon: f64,
-    alt: Option<f64>,
+    lat:  f64,
+    lon:  f64,
+    elev: Option<i64>,
 }
 
 impl Warp10GeoValue {
-    pub fn new(lat: f64, lon: f64, alt: Option<f64>) -> Warp10GeoValue {
+    pub fn new(lat: f64, lon: f64, elev: Option<i64>) -> Warp10GeoValue {
         Warp10GeoValue {
-            lat: lat,
-            lon: lon,
-            alt: alt,
+            lat:  lat,
+            lon:  lon,
+            elev: elev,
         }
     }
 }
@@ -50,7 +50,7 @@ impl Warp10Serializable for Warp10GeoValue {
         format!("{}:{}/{}",
                 self.lat,
                 self.lon,
-                self.alt.map(|a| a.to_string()).unwrap_or("".to_string()))
+                self.elev.map(|e| e.to_string()).unwrap_or("".to_string()))
     }
 }
 
@@ -144,8 +144,8 @@ mod tests {
     fn serialize_geo() {
         assert_eq!(Warp10GeoValue::new(42.66, 32.85, None).warp10_serialize(),
                    "42.66:32.85/");
-        assert_eq!(Warp10GeoValue::new(42.66, 32.85, Some(10.2)).warp10_serialize(),
-                   "42.66:32.85/10.2");
+        assert_eq!(Warp10GeoValue::new(42.66, 32.85, Some(10)).warp10_serialize(),
+                   "42.66:32.85/10");
     }
 
     #[test]
@@ -159,12 +159,12 @@ mod tests {
                        .warp10_serialize(),
                    "25123456// original+name{label1=value1,label+2=value+2} 'foobar'");
         assert_eq!(Warp10Data::new(Timespec::new(25, 123456789),
-                                   Some(Warp10GeoValue::new(42.66, 32.85, Some(10.2))),
+                                   Some(Warp10GeoValue::new(42.66, 32.85, Some(10))),
                                    "original name".to_string(),
                                    vec![("label1".to_string(), "value1".to_string()),
                                         ("label 2".to_string(), "value 2".to_string())],
                                    Warp10Value::String("foobar".to_string()))
                        .warp10_serialize(),
-                   "25123456/42.66:32.85/10.2 original+name{label1=value1,label+2=value+2} 'foobar'");
+                   "25123456/42.66:32.85/10 original+name{label1=value1,label+2=value+2} 'foobar'");
     }
 }
