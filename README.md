@@ -10,7 +10,7 @@ Reading support should come at some point.
 
 ## Example
 
-```
+```rust
 extern crate hyper;
 extern crate time;
 extern crate warp10;
