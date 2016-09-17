@@ -1,6 +1,8 @@
 # This is a Rust client for [Warp10 Geo/time series DB](http://www.warp10.io/)
 
+[![Crates.io](https://img.shields.io/crates/v/warp10.svg?maxAge=2592000)](https://crates.io/crates/warp10)
 [![Build Status](https://travis-ci.org/CleverCloud/warp10.rs.svg?branch=master)](https://travis-ci.org/CleverCloud/warp10.rs)
+[![LICENSE](https://img.shields.io/github/license/CleverCloud/warp10.rs.svg?maxAge=2592000)](COPYING)
 
 ## Features
 
