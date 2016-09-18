@@ -4,15 +4,16 @@ use itertools::Itertools;
 use client::*;
 use data::*;
 use error::*;
+use token::*;
 
 #[derive(Debug)]
 pub struct Writer<'a> {
     client: &'a Client,
-    token:  String,
+    token:  Token<'a>,
 }
 
 impl<'a> Writer<'a> {
-    pub fn new(client: &Client, token: String) -> Writer {
+    pub fn new(client: &'a Client, token: Token<'a>) -> Writer<'a> {
         Writer {
             client: client,
             token:  token
@@ -24,7 +25,7 @@ impl<'a> Writer<'a> {
         let url = try!(self.client.url.join("/api/v0/update"));
         let resp = try!(client::Client::new()
             .post(url)
-            .headers(self.client.get_headers(&self.token))
+            .headers(self.token.get_headers())
             .body(client::Body::BufBody(body.as_bytes(), body.len()))
             .send());
         Ok(resp)
