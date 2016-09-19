@@ -1,8 +1,8 @@
 # This is a Rust client for [Warp10 Geo/time series DB](http://www.warp10.io/)
 
-[![Crates.io](https://img.shields.io/crates/v/warp10.svg?maxAge=2592000)](https://crates.io/crates/warp10)
+[![Crates.io](https://img.shields.io/crates/v/warp10.svg)](https://crates.io/crates/warp10)
 [![Build Status](https://travis-ci.org/CleverCloud/warp10.rs.svg?branch=master)](https://travis-ci.org/CleverCloud/warp10.rs)
-[![LICENSE](https://img.shields.io/github/license/CleverCloud/warp10.rs.svg?maxAge=2592000)](COPYING)
+[![LICENSE](https://img.shields.io/github/license/CleverCloud/warp10.rs.svg)](COPYING)
 
 ## Features
 
@@ -26,8 +26,8 @@ fn warp10_post() -> std::result::Result<hyper::client::Response, warp10::Error> 
             Some(warp10::GeoValue::new(42.66, 62.18, Some(10))),
             "test data name 2".to_string(),
             vec![
-                ("label 1 name".to_string(), "label 1 value".to_string()),
-                ("label 2 name".to_string(), "label 2 value".to_string())
+                warp10::Label::new("label 1 name", "label 1 value"),
+                warp10::Label::new("label 2 name", "label 2 value")
             ],
             warp10::Value::String("Test warp10 awesome value".to_string())
         )
