@@ -6,7 +6,7 @@ use writer::*;
 
 #[derive(Debug)]
 pub struct Client {
-    pub url: Url
+    url: Url
 }
 
 impl Client {
@@ -15,6 +15,10 @@ impl Client {
         Ok(Client {
             url: real_url
         })
+    }
+
+    pub fn url(&self) -> &Url {
+        &self.url
     }
 
     pub fn get_writer(&self, token: String) -> Writer {
