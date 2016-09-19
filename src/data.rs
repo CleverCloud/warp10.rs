@@ -2,6 +2,12 @@ use itertools::Itertools;
 use time::Timespec;
 use url::percent_encoding;
 
+fn url_encode(input: &str) -> String {
+    let mut s = String::new();
+    s.extend(percent_encoding::utf8_percent_encode(input, percent_encoding::SIMPLE_ENCODE_SET));
+    s
+}
+
 pub trait Warp10Serializable {
     fn warp10_serialize(&self) -> String;
 }
@@ -59,6 +65,27 @@ impl Warp10Serializable for GeoValue {
 }
 
 #[derive(Debug)]
+pub struct Label<'a> {
+    name:  &'a str,
+    value: &'a str
+}
+
+impl<'a> Label<'a> {
+    pub fn new(name: &'a str, value: &'a str) -> Label<'a> {
+        Label {
+            name:  name,
+            value: value
+        }
+    }
+}
+
+impl<'a> Warp10Serializable for Label<'a> {
+    fn warp10_serialize(&self) -> String {
+        format!("{}={}", url_encode(self.name), url_encode(self.value))
+    }
+}
+
+#[derive(Debug)]
 pub struct Data {
     date:   Timespec,
     geo:    Option<GeoValue>,
@@ -82,12 +109,6 @@ impl Data {
             value:  value,
         }
     }
-}
-
-fn url_encode(input: &str) -> String {
-    let mut s = String::new();
-    s.extend(percent_encoding::utf8_percent_encode(input, percent_encoding::SIMPLE_ENCODE_SET));
-    s
 }
 
 impl Warp10Serializable for Data {
@@ -146,6 +167,11 @@ mod tests {
                    "42.66:32.85/");
         assert_eq!(GeoValue::new(42.66, 32.85, Some(10)).warp10_serialize(),
                    "42.66:32.85/10");
+    }
+
+    #[test]
+    fn serialize_label() {
+        assert_eq!(Label::new("name 1", "凄い value 2").warp10_serialize(), "name 1=%E5%87%84%E3%81%84 value 2");
     }
 
     #[test]
