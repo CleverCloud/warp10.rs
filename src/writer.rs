@@ -1,4 +1,5 @@
 use hyper::client;
+use hyper::status::StatusCode;
 use itertools::Itertools;
 
 use client::*;
@@ -29,6 +30,11 @@ impl<'a> Writer<'a> {
             .headers(self.token.get_headers())
             .body(client::Body::BufBody(body.as_bytes(), body.len()))
             .send());
-        Response::new(&mut resp)
+        let response = try!(Response::new(&mut resp));
+
+        match response.status() {
+            StatusCode::Ok => Ok(response),
+            _              => Err(Error::api_error(response))
+        }
     }
 }
