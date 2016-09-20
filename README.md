@@ -17,7 +17,7 @@ extern crate hyper;
 extern crate time;
 extern crate warp10;
 
-fn warp10_post() -> std::result::Result<hyper::client::Response, warp10::Error> {
+fn warp10_post() -> std::result::Result<warp10::Response, warp10::Error> {
     let client = try!(warp10::Client::new("http://localhost:8080/"));
     let writer = client.get_writer("my_write_token".to_string());
     let res    = try!(writer.post(vec![
