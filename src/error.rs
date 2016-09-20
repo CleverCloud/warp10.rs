@@ -1,10 +1,13 @@
 extern crate hyper;
 extern crate url;
 
+use response::*;
+
 use std::{error, fmt, io, result};
 
 #[derive(Debug)]
 pub enum Error {
+    ApiError(Response),
     HttpError(hyper::Error),
     IoError(io::Error),
     UrlError(url::ParseError),
@@ -13,6 +16,7 @@ pub enum Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
+            Error::ApiError(ref resp) => write!(f, "Warp10 API error: {:?}", resp),
             Error::HttpError(ref err) => write!(f, "Warp10 HTTP error: {}", err),
             Error::IoError(ref err)   => write!(f, "Warp10 IO error: {}", err),
             Error::UrlError(ref err)  => write!(f, "Warp10 URL error: {}",  err),
@@ -23,6 +27,7 @@ impl fmt::Display for Error {
 impl error::Error for Error {
     fn description(&self) -> &str {
         match *self {
+            Error::ApiError(ref resp) => resp.payload(),
             Error::HttpError(ref err) => err.description(),
             Error::IoError(ref err)   => err.description(),
             Error::UrlError(ref err)  => err.description(),
@@ -31,10 +36,17 @@ impl error::Error for Error {
 
     fn cause(&self) -> Option<&error::Error> {
         match *self {
+            Error::ApiError(_)        => None,
             Error::HttpError(ref err) => Some(err),
             Error::IoError(ref err)   => Some(err),
             Error::UrlError(ref err)  => Some(err),
         }
+    }
+}
+
+impl Error {
+    pub fn api_error(response: Response) -> Error {
+        Error::ApiError(response)
     }
 }
 
