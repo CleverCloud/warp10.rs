@@ -18,9 +18,9 @@ extern crate time;
 extern crate warp10;
 
 fn warp10_post() -> std::result::Result<warp10::Response, warp10::Error> {
-    let client = try!(warp10::Client::new("http://localhost:8080/"));
+    let client = warp10::Client::new("http://localhost:8080/")?;
     let writer = client.get_writer("my_write_token".to_string());
-    let res    = try!(writer.post(vec![
+    let res    = writer.post(vec![
         warp10::Data::new(
             time::now_utc().to_timespec(),
             Some(warp10::GeoValue::new(42.66, 62.18, Some(10))),
@@ -31,7 +31,7 @@ fn warp10_post() -> std::result::Result<warp10::Response, warp10::Error> {
             ],
             warp10::Value::String("Test warp10 awesome value".to_string())
         )
-    ]));
+    ])?;
     Ok(res)
 }
 

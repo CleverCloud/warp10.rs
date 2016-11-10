@@ -11,9 +11,8 @@ pub struct Client {
 
 impl Client {
     pub fn new(url: &str) -> Result<Client> {
-        let real_url = try!(Url::parse(url));
         Ok(Client {
-            url: real_url
+            url: Url::parse(url)?
         })
     }
 

@@ -24,13 +24,11 @@ impl<'a> Writer<'a> {
 
     pub fn post(&self, data: Vec<Data>) -> Result<Response> {
         let body     = data.iter().map(|d| d.warp10_serialize()).join("\n");
-        let url      = try!(self.client.url().join("/api/v0/update"));
-        let mut resp = try!(client::Client::new()
-            .post(url)
+        let response = Response::new(&mut client::Client::new()
+            .post(self.client.url().join("/api/v0/update")?)
             .headers(self.token.get_headers())
             .body(client::Body::BufBody(body.as_bytes(), body.len()))
-            .send());
-        let response = try!(Response::new(&mut resp));
+            .send()?)?;
 
         match response.status() {
             StatusCode::Ok => Ok(response),

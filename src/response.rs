@@ -15,7 +15,7 @@ impl Response {
     pub fn new(response: &mut client::Response) -> Result<Response> {
         let mut payload = String::new();
 
-        try!(response.read_to_string(&mut payload));
+        response.read_to_string(&mut payload)?;
 
         Ok(Response {
             status:  response.status,
