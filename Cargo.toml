@@ -11,6 +11,6 @@ description   = "Warp10 client for rust"
 
 [dependencies]
 hyper     = "^0.9.12"
-itertools = "^0.5.2"
+itertools = "^0.5.6"
 time      = "^0.1.35"
 url       = "^1.2.2"
