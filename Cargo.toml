@@ -10,7 +10,7 @@ documentation = "https://docs.rs/warp10/"
 description   = "Warp10 client for rust"
 
 [dependencies]
-hyper     = "^0.9.12"
+hyper     = "^0.9.13"
 itertools = "^0.5.6"
 time      = "^0.1.35"
 url       = "^1.2.2"
