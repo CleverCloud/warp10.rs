@@ -1,5 +1,6 @@
 extern crate hyper;
-#[macro_use] extern crate itertools;
+extern crate hyper_rustls;
+extern crate itertools;
 extern crate time;
 extern crate url;
 
