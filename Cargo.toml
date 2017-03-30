@@ -1,16 +1,21 @@
 [package]
 name          = "warp10"
-version       = "0.4.3"
+version       = "0.5.0"
 authors       = ["Marc-Antoine Perennou <marc-antoine.perennou@clever-cloud.com>"]
-license       = "BSD-3-Clause"
-readme        = "README.md"
-repository    = "https://github.com/CleverCloud/warp10.rs"
-homepage      = "https://github.com/CleverCloud/warp10.rs"
-documentation = "https://docs.rs/warp10/"
 description   = "Warp10 client for rust"
+repository    = "https://github.com/CleverCloud/warp10.rs"
+documentation = "https://docs.rs/warp10/"
+readme        = "README.md"
+keywords      = ["warp10", "time-series"]
+categories    = ["api-bindings", "database", ]
+license       = "BSD-3-Clause"
 
 [dependencies]
 hyper        = "^0.10.5"
 hyper-rustls = "^0.3.2"
 time         = "^0.1.36"
 url          = "^1.4.0"
+
+[badges]
+travis-ci = { repository = "Keruspe/warp10.rs" }
+appveyor  = { repository = "Keruspe/warp10.rs" }
