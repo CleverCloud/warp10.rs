@@ -1,4 +1,3 @@
-use itertools::Itertools;
 use time::Timespec;
 use url::percent_encoding;
 
@@ -118,7 +117,13 @@ impl<'a> Warp10Serializable for Data<'a> {
             &None        => "/".to_string(),
             &Some(ref g) => g.warp10_serialize()
         };
-        let labels = self.labels.iter().map(|l| l.warp10_serialize()).join(",");
+        let labels = self.labels.iter().map(|l| l.warp10_serialize()).fold(String::new(), |acc, cur| {
+            if acc.is_empty() {
+                cur
+            } else {
+                (acc + ",") + &cur
+            }
+        });
         format!("{}/{} {}{{{}}} {}",
                 date_ms,
                 geo,

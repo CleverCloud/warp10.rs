@@ -2,7 +2,6 @@ use hyper::client;
 use hyper::net::HttpsConnector;
 use hyper::status::StatusCode;
 use hyper_rustls::TlsClient;
-use itertools::Itertools;
 
 use client::*;
 use data::*;
@@ -25,7 +24,13 @@ impl<'a> Writer<'a> {
     }
 
     pub fn post(&self, data: Vec<Data>) -> Result<Response> {
-        let body     = data.iter().map(|d| d.warp10_serialize()).join("\n");
+        let body     = data.iter().map(|d| d.warp10_serialize()).fold(String::new(), |acc, cur| {
+            if acc.is_empty() {
+                cur
+            } else {
+                (acc + "\n") + &cur
+            }
+        });
         let response = Response::new(&mut client::Client::with_connector(HttpsConnector::new(TlsClient::new()))
             .post(self.client.url().join("/api/v0/update")?)
             .headers(self.token.get_headers())
