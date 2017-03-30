@@ -2,6 +2,8 @@
 
 [![Crates.io](https://img.shields.io/crates/v/warp10.svg)](https://crates.io/crates/warp10)
 [![Build Status](https://travis-ci.org/CleverCloud/warp10.rs.svg?branch=master)](https://travis-ci.org/CleverCloud/warp10.rs)
+[![Build status](https://ci.appveyor.com/api/projects/status/a07ji027cs3t7jqu?svg=true)](https://ci.appveyor.com/project/Keruspe/warp10-rs)
+[![Coverage Status](https://coveralls.io/repos/github/CleverCloud/warp10.rs/badge.svg?branch=master)](https://coveralls.io/github/CleverCloud/warp10.rs?branch=master)
 [![LICENSE](https://img.shields.io/github/license/CleverCloud/warp10.rs.svg)](COPYING)
 
 ## Features
