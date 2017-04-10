@@ -11,7 +11,7 @@ categories    = ["api-bindings", "database", ]
 license       = "BSD-3-Clause"
 
 [dependencies]
-hyper        = "^0.10.5"
+hyper        = "^0.10.7"
 hyper-rustls = "^0.3.2"
 time         = "^0.1.36"
 url          = "^1.4.0"
