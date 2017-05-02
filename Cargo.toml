@@ -11,10 +11,10 @@ categories    = ["api-bindings", "database", ]
 license       = "BSD-3-Clause"
 
 [dependencies]
-hyper        = "^0.10.9"
-hyper-rustls = "^0.3.3"
-time         = "^0.1.36"
-url          = "^1.4.0"
+hyper        = "^0.10"
+hyper-rustls = "^0.3"
+time         = "^0.1"
+url          = "^1.4"
 
 [badges]
 travis-ci = { repository = "Keruspe/warp10.rs" }
