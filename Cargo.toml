@@ -12,7 +12,7 @@ license       = "BSD-3-Clause"
 
 [dependencies]
 hyper        = "^0.10"
-hyper-rustls = "^0.3"
+hyper-rustls = "^0.4"
 time         = "^0.1"
 url          = "^1.4"
 
