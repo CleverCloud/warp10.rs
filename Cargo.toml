@@ -1,6 +1,6 @@
 [package]
 name          = "warp10"
-version       = "0.6.0"
+version       = "0.7.0"
 authors       = ["Marc-Antoine Perennou <marc-antoine.perennou@clever-cloud.com>"]
 description   = "Warp10 client for rust"
 repository    = "https://github.com/CleverCloud/warp10.rs"
@@ -12,7 +12,7 @@ license       = "BSD-3-Clause"
 
 [dependencies]
 hyper        = "^0.10"
-hyper-rustls = "^0.4"
+hyper-rustls = "^0.5"
 time         = "^0.1"
 url          = "^1.4"
 
