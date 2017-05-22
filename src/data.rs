@@ -59,7 +59,7 @@ impl Warp10Serializable for GeoValue {
         format!("{}:{}/{}",
                 self.lat,
                 self.lon,
-                self.elev.map(|e| e.to_string()).unwrap_or("".to_string()))
+                self.elev.map(|e| e.to_string()).unwrap_or_else(|| "".to_string()))
     }
 }
 
@@ -113,9 +113,9 @@ impl<'a> Data<'a> {
 impl<'a> Warp10Serializable for Data<'a> {
     fn warp10_serialize(&self) -> String {
         let date_ms = self.date.sec * 1000000 + (self.date.nsec as Long) / 1000;
-        let geo = match &self.geo {
-            &None        => "/".to_string(),
-            &Some(ref g) => g.warp10_serialize()
+        let geo = match self.geo {
+            None        => "/".to_string(),
+            Some(ref g) => g.warp10_serialize()
         };
         let labels = self.labels.iter().map(|l| l.warp10_serialize()).fold(String::new(), |acc, cur| {
             if acc.is_empty() {
