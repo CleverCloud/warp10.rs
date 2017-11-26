@@ -1,5 +1,4 @@
-extern crate hyper;
-extern crate hyper_rustls;
+extern crate reqwest;
 extern crate time;
 extern crate url;
 

@@ -1,7 +1,4 @@
-use hyper::client;
-use hyper::net::HttpsConnector;
-use hyper::status::StatusCode;
-use hyper_rustls::TlsClient;
+use reqwest::{self, StatusCode};
 
 use client::*;
 use data::*;
@@ -31,10 +28,10 @@ impl<'a> Writer<'a> {
                 (acc + "\n") + &cur
             }
         });
-        let response = Response::new(&mut client::Client::with_connector(HttpsConnector::new(TlsClient::new()))
+        let response = Response::new(&mut reqwest::Client::new()
             .post(self.client.url().join("/api/v0/update")?)
             .headers(self.token.get_headers())
-            .body(client::Body::BufBody(body.as_bytes(), body.len()))
+            .body(reqwest::Body::from(body))
             .send()?)?;
 
         match response.status() {

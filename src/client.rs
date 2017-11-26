@@ -1,4 +1,4 @@
-use hyper::Url;
+use reqwest::Url;
 
 use error::*;
 use token::*;

@@ -1,7 +1,6 @@
 use error::*;
 
-use hyper::client;
-use hyper::status::StatusCode;
+use reqwest::{self, StatusCode};
 
 use std::io::Read;
 
@@ -12,13 +11,13 @@ pub struct Response {
 }
 
 impl Response {
-    pub fn new(response: &mut client::Response) -> Result<Response> {
+    pub fn new(response: &mut reqwest::Response) -> Result<Response> {
         let mut payload = String::new();
 
         response.read_to_string(&mut payload)?;
 
         Ok(Response {
-            status:  response.status,
+            status:  response.status().clone(),
             payload: payload
         })
     }

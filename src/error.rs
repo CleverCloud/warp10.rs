@@ -1,4 +1,4 @@
-extern crate hyper;
+extern crate reqwest;
 extern crate url;
 
 use response::*;
@@ -8,7 +8,7 @@ use std::{error, fmt, io, result};
 #[derive(Debug)]
 pub enum Error {
     ApiError(Response),
-    HttpError(hyper::Error),
+    HttpError(reqwest::Error),
     IoError(io::Error),
     UrlError(url::ParseError),
 }
@@ -50,8 +50,8 @@ impl Error {
     }
 }
 
-impl From<hyper::Error> for Error {
-    fn from(err: hyper::Error) -> Error {
+impl From<reqwest::Error> for Error {
+    fn from(err: reqwest::Error) -> Error {
         Error::HttpError(err)
     }
 }
