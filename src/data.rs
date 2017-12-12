@@ -3,7 +3,10 @@ use url::percent_encoding;
 
 fn url_encode(input: &str) -> String {
     let mut s = String::new();
-    s.extend(percent_encoding::utf8_percent_encode(input, percent_encoding::SIMPLE_ENCODE_SET));
+    s.extend(percent_encoding::utf8_percent_encode(
+        input,
+        percent_encoding::SIMPLE_ENCODE_SET,
+    ));
     s
 }
 
@@ -32,7 +35,7 @@ impl Warp10Serializable for Value {
             Value::Long(l)       => l.to_string(),
             Value::Double(d)     => d.to_string(),
             Value::Boolean(b)    => b.to_string(),
-            Value::String(ref s) => format!("'{}'", s)
+            Value::String(ref s) => format!("'{}'", s),
         }
     }
 }
@@ -56,24 +59,28 @@ impl GeoValue {
 
 impl Warp10Serializable for GeoValue {
     fn warp10_serialize(&self) -> String {
-        format!("{}:{}/{}",
-                self.lat,
-                self.lon,
-                self.elev.map(|e| e.to_string()).unwrap_or_else(|| "".to_string()))
+        format!(
+            "{}:{}/{}",
+            self.lat,
+            self.lon,
+            self.elev
+                .map(|e| e.to_string())
+                .unwrap_or_else(|| "".to_string())
+        )
     }
 }
 
 #[derive(Debug)]
 pub struct Label<'a> {
     name:  &'a str,
-    value: &'a str
+    value: &'a str,
 }
 
 impl<'a> Label<'a> {
     pub fn new(name: &'a str, value: &'a str) -> Label<'a> {
         Label {
             name:  name,
-            value: value
+            value: value,
         }
     }
 }
@@ -94,12 +101,7 @@ pub struct Data<'a> {
 }
 
 impl<'a> Data<'a> {
-    pub fn new(date:   Timespec,
-               geo:    Option<GeoValue>,
-               name:   String,
-               labels: Vec<Label<'a>>,
-               value:  Value)
-               -> Data<'a> {
+    pub fn new(date: Timespec, geo: Option<GeoValue>, name: String, labels: Vec<Label<'a>>, value: Value) -> Data<'a> {
         Data {
             date:   date,
             geo:    geo,
@@ -113,23 +115,28 @@ impl<'a> Data<'a> {
 impl<'a> Warp10Serializable for Data<'a> {
     fn warp10_serialize(&self) -> String {
         let date_ms = self.date.sec * 1000000 + (self.date.nsec as Long) / 1000;
-        let geo = match self.geo {
-            None        => "/".to_string(),
-            Some(ref g) => g.warp10_serialize()
-        };
-        let labels = self.labels.iter().map(|l| l.warp10_serialize()).fold(String::new(), |acc, cur| {
-            if acc.is_empty() {
-                cur
-            } else {
-                (acc + ",") + &cur
-            }
-        });
-        format!("{}/{} {}{{{}}} {}",
-                date_ms,
-                geo,
-                url_encode(&self.name),
-                labels,
-                self.value.warp10_serialize())
+        let geo     = self.geo
+            .as_ref()
+            .map(Warp10Serializable::warp10_serialize)
+            .unwrap_or_else(|| "/".to_string());
+        let labels  = self.labels
+            .iter()
+            .map(|l| l.warp10_serialize())
+            .fold(String::new(), |acc, cur| {
+                if acc.is_empty() {
+                    cur
+                } else {
+                    (acc + ",") + &cur
+                }
+            });
+        format!(
+            "{}/{} {}{{{}}} {}",
+            date_ms,
+            geo,
+            url_encode(&self.name),
+            labels,
+            self.value.warp10_serialize()
+        )
     }
 }
 
@@ -162,44 +169,59 @@ mod tests {
 
     #[test]
     fn serialize_string() {
-        assert_eq!(Value::String("foobar".to_string()).warp10_serialize(),
-                   "'foobar'");
+        assert_eq!(
+            Value::String("foobar".to_string()).warp10_serialize(),
+            "'foobar'"
+        );
     }
 
     #[test]
     fn serialize_geo() {
-        assert_eq!(GeoValue::new(42.66, 32.85, None).warp10_serialize(),
-                   "42.66:32.85/");
-        assert_eq!(GeoValue::new(42.66, 32.85, Some(10)).warp10_serialize(),
-                   "42.66:32.85/10");
+        assert_eq!(
+            GeoValue::new(42.66, 32.85, None).warp10_serialize(),
+            "42.66:32.85/"
+        );
+        assert_eq!(
+            GeoValue::new(42.66, 32.85, Some(10)).warp10_serialize(),
+            "42.66:32.85/10"
+        );
     }
 
     #[test]
     fn serialize_label() {
-        assert_eq!(Label::new("name 1", "凄い value 2").warp10_serialize(), "name 1=%E5%87%84%E3%81%84 value 2");
+        assert_eq!(
+            Label::new("name 1", "凄い value 2").warp10_serialize(),
+            "name 1=%E5%87%84%E3%81%84 value 2"
+        );
     }
 
     #[test]
     fn serialize_data() {
-        assert_eq!(Data::new(Timespec::new(25, 123456789),
-                             None,
-                             "original name".to_string(),
-                             vec![
-                                 Label::new("label1", "value1"),
-                                 Label::new("label 2", "value 2")
-                             ],
-                             Value::String("foobar".to_string()))
-                       .warp10_serialize(),
-                   "25123456// original name{label1=value1,label 2=value 2} 'foobar'");
-        assert_eq!(Data::new(Timespec::new(25, 123456789),
-                             Some(GeoValue::new(42.66, 32.85, Some(10))),
-                             "original name".to_string(),
-                             vec![
-                                 Label::new("label1", "value1"),
-                                 Label::new("label 2", "value 2")
-                             ],
-                             Value::String("foobar".to_string()))
-                       .warp10_serialize(),
-                   "25123456/42.66:32.85/10 original name{label1=value1,label 2=value 2} 'foobar'");
+        assert_eq!(
+            Data::new(
+                Timespec::new(25, 123456789),
+                None,
+                "original name".to_string(),
+                vec![
+                    Label::new("label1",  "value1"),
+                    Label::new("label 2", "value 2"),
+                ],
+                Value::String("foobar".to_string())
+            ).warp10_serialize(),
+            "25123456// original name{label1=value1,label 2=value 2} 'foobar'"
+        );
+        assert_eq!(
+            Data::new(
+                Timespec::new(25, 123456789),
+                Some(GeoValue::new(42.66, 32.85, Some(10))),
+                "original name".to_string(),
+                vec![
+                    Label::new("label1",  "value1"),
+                    Label::new("label 2", "value 2"),
+                ],
+                Value::String("foobar".to_string())
+            ).warp10_serialize(),
+            "25123456/42.66:32.85/10 original name{label1=value1,label 2=value 2} 'foobar'"
+        );
     }
 }

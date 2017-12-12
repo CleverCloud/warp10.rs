@@ -6,13 +6,13 @@ use writer::*;
 
 #[derive(Debug)]
 pub struct Client {
-    url: Url
+    url: Url,
 }
 
 impl Client {
     pub fn new(url: &str) -> Result<Client> {
         Ok(Client {
-            url: Url::parse(url)?
+            url: Url::parse(url)?,
         })
     }
 

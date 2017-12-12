@@ -7,7 +7,7 @@ use std::io::Read;
 #[derive(Debug)]
 pub struct Response {
     status:  StatusCode,
-    payload: String
+    payload: String,
 }
 
 impl Response {
@@ -18,7 +18,7 @@ impl Response {
 
         Ok(Response {
             status:  response.status().clone(),
-            payload: payload
+            payload: payload,
         })
     }
 

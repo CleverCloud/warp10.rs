@@ -16,18 +16,20 @@ impl<'a> Writer<'a> {
     pub fn new(client: &'a Client, token: Token<'a>) -> Writer<'a> {
         Writer {
             client: client,
-            token:  token
+            token:  token,
         }
     }
 
     pub fn post(&self, data: Vec<Data>) -> Result<Response> {
-        let body     = data.iter().map(|d| d.warp10_serialize()).fold(String::new(), |acc, cur| {
-            if acc.is_empty() {
-                cur
-            } else {
-                (acc + "\n") + &cur
-            }
-        });
+        let body     = data.iter()
+            .map(|d| d.warp10_serialize())
+            .fold(String::new(), |acc, cur| {
+                if acc.is_empty() {
+                    cur
+                } else {
+                    (acc + "\n") + &cur
+                }
+            });
         let response = Response::new(&mut reqwest::Client::new()
             .post(self.client.url().join("/api/v0/update")?)
             .headers(self.token.get_headers())
