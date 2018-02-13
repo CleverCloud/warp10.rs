@@ -19,7 +19,7 @@ pub type Long    = i64;
 pub type Double  = f64;
 pub type Boolean = bool;
 
-#[derive(Debug)]
+#[derive(Debug,Clone,PartialEq)]
 pub enum Value {
     Int(Int),
     Long(Long),
@@ -40,7 +40,7 @@ impl Warp10Serializable for Value {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug,Clone,PartialEq)]
 pub struct GeoValue {
     lat:  Double,
     lon:  Double,
@@ -70,38 +70,38 @@ impl Warp10Serializable for GeoValue {
     }
 }
 
-#[derive(Debug)]
-pub struct Label<'a> {
-    name:  &'a str,
-    value: &'a str,
+#[derive(Debug,Clone,PartialEq)]
+pub struct Label {
+    name:  String,
+    value: String,
 }
 
-impl<'a> Label<'a> {
-    pub fn new(name: &'a str, value: &'a str) -> Label<'a> {
+impl Label {
+    pub fn new(name: &str, value: &str) -> Label {
         Label {
-            name:  name,
-            value: value,
+            name:  name.to_string(),
+            value: value.to_string(),
         }
     }
 }
 
-impl<'a> Warp10Serializable for Label<'a> {
+impl Warp10Serializable for Label {
     fn warp10_serialize(&self) -> String {
-        format!("{}={}", url_encode(self.name), url_encode(self.value))
+        format!("{}={}", url_encode(&self.name), url_encode(&self.value))
     }
 }
 
-#[derive(Debug)]
-pub struct Data<'a> {
+#[derive(Debug,Clone,PartialEq)]
+pub struct Data {
     date:   Timespec,
     geo:    Option<GeoValue>,
     name:   String,
-    labels: Vec<Label<'a>>,
+    labels: Vec<Label>,
     value:  Value,
 }
 
-impl<'a> Data<'a> {
-    pub fn new(date: Timespec, geo: Option<GeoValue>, name: String, labels: Vec<Label<'a>>, value: Value) -> Data<'a> {
+impl Data {
+    pub fn new(date: Timespec, geo: Option<GeoValue>, name: String, labels: Vec<Label>, value: Value) -> Data {
         Data {
             date:   date,
             geo:    geo,
@@ -112,7 +112,7 @@ impl<'a> Data<'a> {
     }
 }
 
-impl<'a> Warp10Serializable for Data<'a> {
+impl Warp10Serializable for Data {
     fn warp10_serialize(&self) -> String {
         let date_ms = self.date.sec * 1000000 + (self.date.nsec as Long) / 1000;
         let geo     = self.geo
