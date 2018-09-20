@@ -20,6 +20,12 @@ impl Client {
         &self.url
     }
 
+    pub fn host_and_maybe_port(&self) -> String {
+        let host = self.url.host_str().unwrap_or("localhost");
+
+        self.url.port().map(|port| format!("{}:{}", host, port)).unwrap_or_else(|| host.to_string())
+    }
+
     pub fn get_writer(&self, token: String) -> Writer {
         Writer::new(self, Token::new(self, token))
     }

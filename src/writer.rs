@@ -37,7 +37,7 @@ impl<'a> Writer<'a> {
             .send()?)?;
 
         match response.status() {
-            StatusCode::Ok => Ok(response),
+            StatusCode::OK => Ok(response),
             _              => Err(Error::api_error(response))
         }
     }

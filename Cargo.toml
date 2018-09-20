@@ -11,7 +11,8 @@ categories    = ["api-bindings", "database", ]
 license       = "BSD-3-Clause"
 
 [dependencies]
-reqwest = "^0.8"
+mime    = "^0.3"
+reqwest = "^0.9"
 time    = "^0.1"
 url     = "^1.4"
 

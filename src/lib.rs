@@ -1,3 +1,4 @@
+extern crate mime;
 extern crate reqwest;
 extern crate time;
 extern crate url;
