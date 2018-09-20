@@ -22,7 +22,7 @@ impl<'a> Token<'a> {
         headers.insert(CONTENT_TYPE, HeaderValue::from_str(mime::TEXT_PLAIN_UTF_8.as_ref()).expect("failed to parse mime type"));
         headers.insert(HOST, HeaderValue::from_str(&self.client.host_and_maybe_port()).unwrap_or_else(|_| HeaderValue::from_static("localhost")));
         if let Ok(token) = HeaderValue::from_str(&self.token) {
-            headers.insert(HeaderName::from_static("X-Warp10-Token"), token);
+            headers.insert(HeaderName::from_static("x-warp10-token"), token);
         }
         headers
     }
