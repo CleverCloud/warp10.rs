@@ -9,6 +9,7 @@ use std::{error, fmt, io, result};
 pub enum Error {
     ApiError(Response),
     HttpError(reqwest::Error),
+    HttpUrlError(reqwest::UrlError),
     IoError(io::Error),
     UrlError(url::ParseError),
 }
@@ -18,6 +19,7 @@ impl fmt::Display for Error {
         match *self {
             Error::ApiError(ref resp) => write!(f, "Warp10 API error: {:?}", resp),
             Error::HttpError(ref err) => write!(f, "Warp10 HTTP error: {}", err),
+            Error::HttpUrlError(ref err) => write!(f, "Warp10 HTTP URL error: {}", err),
             Error::IoError(ref err)   => write!(f, "Warp10 IO error: {}", err),
             Error::UrlError(ref err)  => write!(f, "Warp10 URL error: {}",  err),
         }
@@ -25,21 +27,13 @@ impl fmt::Display for Error {
 }
 
 impl error::Error for Error {
-    fn description(&self) -> &str {
+    fn cause(&self) -> Option<&dyn error::Error> {
         match *self {
-            Error::ApiError(ref resp) => resp.payload(),
-            Error::HttpError(ref err) => err.description(),
-            Error::IoError(ref err)   => err.description(),
-            Error::UrlError(ref err)  => err.description(),
-        }
-    }
-
-    fn cause(&self) -> Option<&error::Error> {
-        match *self {
-            Error::ApiError(_)        => None,
-            Error::HttpError(ref err) => Some(err),
-            Error::IoError(ref err)   => Some(err),
-            Error::UrlError(ref err)  => Some(err),
+            Error::ApiError(_)           => None,
+            Error::HttpError(ref err)    => Some(err),
+            Error::HttpUrlError(ref err) => Some(err),
+            Error::IoError(ref err)      => Some(err),
+            Error::UrlError(ref err)     => Some(err),
         }
     }
 }
@@ -53,6 +47,12 @@ impl Error {
 impl From<reqwest::Error> for Error {
     fn from(err: reqwest::Error) -> Error {
         Error::HttpError(err)
+    }
+}
+
+impl From<reqwest::UrlError> for Error {
+    fn from(err: reqwest::UrlError) -> Error {
+        Error::HttpUrlError(err)
     }
 }
 

@@ -1,11 +1,10 @@
 use time::Timespec;
-use url::percent_encoding;
 
 fn url_encode(input: &str) -> String {
     let mut s = String::new();
     s.extend(percent_encoding::utf8_percent_encode(
         input,
-        percent_encoding::SIMPLE_ENCODE_SET,
+        percent_encoding::NON_ALPHANUMERIC,
     ));
     s
 }
