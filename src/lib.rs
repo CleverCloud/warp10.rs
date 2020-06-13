@@ -1,5 +1,5 @@
-extern crate mime;
 extern crate isahc;
+extern crate mime;
 extern crate time;
 extern crate url;
 

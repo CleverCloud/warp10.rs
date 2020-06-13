@@ -23,7 +23,10 @@ impl Client {
     pub fn host_and_maybe_port(&self) -> String {
         let host = self.update_uri.host().unwrap_or("localhost");
 
-        self.update_uri.port().map(|port| format!("{}:{}", host, port)).unwrap_or_else(|| host.to_string())
+        self.update_uri
+            .port()
+            .map(|port| format!("{}:{}", host, port))
+            .unwrap_or_else(|| host.to_string())
     }
 
     pub fn get_writer(&self, token: String) -> Writer {

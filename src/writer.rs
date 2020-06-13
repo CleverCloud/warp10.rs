@@ -1,4 +1,4 @@
-use isahc::{prelude::*, http::status::StatusCode};
+use isahc::{http::status::StatusCode, prelude::*};
 
 use client::*;
 use data::*;
@@ -9,7 +9,7 @@ use token::*;
 #[derive(Debug)]
 pub struct Writer<'a> {
     client: &'a Client,
-    token:  Token<'a>,
+    token: Token<'a>,
 }
 
 impl<'a> Writer<'a> {
@@ -18,7 +18,8 @@ impl<'a> Writer<'a> {
     }
 
     pub fn post(&self, data: Vec<Data>) -> Result<Warp10Response> {
-        let body     = data.iter()
+        let body = data
+            .iter()
             .map(|d| d.warp10_serialize())
             .fold(String::new(), |acc, cur| {
                 if acc.is_empty() {
@@ -34,7 +35,7 @@ impl<'a> Writer<'a> {
 
         match response.status() {
             StatusCode::OK => Ok(response),
-            _              => Err(Error::api_error(response))
+            _ => Err(Error::api_error(response)),
         }
     }
 }

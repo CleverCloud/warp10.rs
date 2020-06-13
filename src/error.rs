@@ -23,8 +23,8 @@ impl fmt::Display for Error {
             Error::HttpError(ref err) => write!(f, "Warp10 HTTP error: {}", err),
             Error::HttpUriError(ref err) => write!(f, "Warp10 HTTP URI error: {}", err),
             Error::HttpBodyError(ref err) => write!(f, "Warp10 HTTP body error: {}", err),
-            Error::IoError(ref err)   => write!(f, "Warp10 IO error: {}", err),
-            Error::UrlError(ref err)  => write!(f, "Warp10 URL error: {}",  err),
+            Error::IoError(ref err) => write!(f, "Warp10 IO error: {}", err),
+            Error::UrlError(ref err) => write!(f, "Warp10 URL error: {}", err),
         }
     }
 }
@@ -32,12 +32,12 @@ impl fmt::Display for Error {
 impl error::Error for Error {
     fn cause(&self) -> Option<&dyn error::Error> {
         match *self {
-            Error::ApiError(_)           => None,
-            Error::HttpError(ref err)    => Some(err),
+            Error::ApiError(_) => None,
+            Error::HttpError(ref err) => Some(err),
             Error::HttpUriError(ref err) => Some(err),
-            Error::HttpBodyError(ref err)    => Some(err),
-            Error::IoError(ref err)      => Some(err),
-            Error::UrlError(ref err)     => Some(err),
+            Error::HttpBodyError(ref err) => Some(err),
+            Error::IoError(ref err) => Some(err),
+            Error::UrlError(ref err) => Some(err),
         }
     }
 }

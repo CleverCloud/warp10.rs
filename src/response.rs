@@ -1,17 +1,17 @@
 use error::*;
 
-use isahc::{ResponseExt, http::status::StatusCode};
+use isahc::{http::status::StatusCode, ResponseExt};
 
 #[derive(Debug)]
 pub struct Warp10Response {
-    status:  StatusCode,
+    status: StatusCode,
     payload: String,
 }
 
 impl Warp10Response {
     pub fn new(response: &mut isahc::http::Response<isahc::Body>) -> Result<Self> {
         Ok(Self {
-            status:  response.status().clone(),
+            status: response.status().clone(),
             payload: response.text()?,
         })
     }
