@@ -18,6 +18,12 @@ impl<'a> Writer<'a> {
     }
 
     pub fn post(&self, data: Vec<Data>) -> Result<Warp10Response> {
+        let request = self.post_request(data)?;
+        let response = request.send()?;
+        self.handle_response(response)
+    }
+
+    fn post_request(&self, data: Vec<Data>) -> Result<Request<Body>> {
         let body = data
             .iter()
             .map(|d| d.warp10_serialize())
@@ -31,8 +37,11 @@ impl<'a> Writer<'a> {
 
         let mut request = Request::post(self.client.update_uri()).body(Body::from(body))?;
         self.token.set_headers(request.headers_mut());
-        let response = Warp10Response::new(&mut request.send()?)?;
+        Ok(request)
+    }
 
+    fn handle_response(&self, mut response: Response<Body>) -> Result<Warp10Response> {
+        let response = Warp10Response::new(&mut response)?;
         match response.status() {
             StatusCode::OK => Ok(response),
             _ => Err(Error::api_error(response)),
