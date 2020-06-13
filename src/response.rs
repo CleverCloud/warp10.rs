@@ -1,16 +1,16 @@
 use error::*;
 
-use reqwest::{self, StatusCode};
+use isahc::{ResponseExt, http::status::StatusCode};
 
 #[derive(Debug)]
-pub struct Response {
+pub struct Warp10Response {
     status:  StatusCode,
     payload: String,
 }
 
-impl Response {
-    pub fn new(response: &mut reqwest::Response) -> Result<Response> {
-        Ok(Response {
+impl Warp10Response {
+    pub fn new(response: &mut isahc::http::Response<isahc::Body>) -> Result<Self> {
+        Ok(Self {
             status:  response.status().clone(),
             payload: response.text()?,
         })

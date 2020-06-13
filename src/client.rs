@@ -1,4 +1,4 @@
-use reqwest::Url;
+use isahc::http::uri::Uri;
 
 use error::*;
 use token::*;
@@ -6,24 +6,24 @@ use writer::*;
 
 #[derive(Debug)]
 pub struct Client {
-    url: Url,
+    update_uri: Uri,
 }
 
 impl Client {
-    pub fn new(url: &str) -> Result<Client> {
+    pub fn new(uri: &str) -> Result<Client> {
         Ok(Client {
-            url: Url::parse(url)?,
+            update_uri: format!("{}/api/v0/update", uri).parse()?,
         })
     }
 
-    pub fn url(&self) -> &Url {
-        &self.url
+    pub fn update_uri(&self) -> &Uri {
+        &self.update_uri
     }
 
     pub fn host_and_maybe_port(&self) -> String {
-        let host = self.url.host_str().unwrap_or("localhost");
+        let host = self.update_uri.host().unwrap_or("localhost");
 
-        self.url.port().map(|port| format!("{}:{}", host, port)).unwrap_or_else(|| host.to_string())
+        self.update_uri.port().map(|port| format!("{}:{}", host, port)).unwrap_or_else(|| host.to_string())
     }
 
     pub fn get_writer(&self, token: String) -> Writer {

@@ -1,4 +1,4 @@
-use reqwest::{self, StatusCode};
+use isahc::{prelude::*, http::status::StatusCode};
 
 use client::*;
 use data::*;
@@ -13,14 +13,11 @@ pub struct Writer<'a> {
 }
 
 impl<'a> Writer<'a> {
-    pub fn new(client: &'a Client, token: Token<'a>) -> Writer<'a> {
-        Writer {
-            client: client,
-            token:  token,
-        }
+    pub fn new(client: &'a Client, token: Token<'a>) -> Self {
+        Self { client, token }
     }
 
-    pub fn post(&self, data: Vec<Data>) -> Result<Response> {
+    pub fn post(&self, data: Vec<Data>) -> Result<Warp10Response> {
         let body     = data.iter()
             .map(|d| d.warp10_serialize())
             .fold(String::new(), |acc, cur| {
@@ -30,11 +27,10 @@ impl<'a> Writer<'a> {
                     (acc + "\n") + &cur
                 }
             });
-        let response = Response::new(&mut reqwest::Client::new()
-            .post(self.client.url().join("/api/v0/update")?)
-            .headers(self.token.get_headers())
-            .body(reqwest::Body::from(body))
-            .send()?)?;
+
+        let mut request = Request::post(self.client.update_uri()).body(Body::from(body))?;
+        self.token.set_headers(request.headers_mut());
+        let response = Warp10Response::new(&mut request.send()?)?;
 
         match response.status() {
             StatusCode::OK => Ok(response),

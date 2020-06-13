@@ -13,7 +13,7 @@ license       = "BSD-3-Clause"
 [dependencies]
 mime             = "^0.3"
 percent-encoding = "^2.0"
-reqwest          = "^0.9"
+isahc            = "^0.9"
 time             = "^0.2"
 url              = "^2.0"
 

@@ -1,5 +1,5 @@
 extern crate mime;
-extern crate reqwest;
+extern crate isahc;
 extern crate time;
 extern crate url;
 
