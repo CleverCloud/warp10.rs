@@ -1,4 +1,4 @@
-use error::*;
+use crate::error::*;
 
 use isahc::{http::status::StatusCode, ResponseExt};
 

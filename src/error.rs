@@ -1,7 +1,4 @@
-extern crate isahc;
-extern crate url;
-
-use response::*;
+use crate::response::*;
 
 use isahc::http::uri::InvalidUri;
 use std::{error, fmt, io, result};
@@ -17,7 +14,7 @@ pub enum Error {
 }
 
 impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match *self {
             Error::ApiError(ref resp) => write!(f, "Warp10 API error: {:?}", resp),
             Error::HttpError(ref err) => write!(f, "Warp10 HTTP error: {}", err),

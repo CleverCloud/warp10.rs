@@ -1,10 +1,10 @@
 use isahc::{http::status::StatusCode, prelude::*};
 
-use client::*;
-use data::*;
-use error::*;
-use response::*;
-use token::*;
+use crate::client::*;
+use crate::data::*;
+use crate::error::*;
+use crate::response::*;
+use crate::token::*;
 
 #[derive(Debug)]
 pub struct Writer<'a> {

@@ -1,8 +1,8 @@
 use isahc::http::uri::Uri;
 
-use error::*;
-use token::*;
-use writer::*;
+use crate::error::*;
+use crate::token::*;
+use crate::writer::*;
 
 #[derive(Debug)]
 pub struct Client {
@@ -29,7 +29,7 @@ impl Client {
             .unwrap_or_else(|| host.to_string())
     }
 
-    pub fn get_writer(&self, token: String) -> Writer {
+    pub fn get_writer(&self, token: String) -> Writer<'_> {
         Writer::new(self, Token::new(self, token))
     }
 }

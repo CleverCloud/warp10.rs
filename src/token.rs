@@ -1,7 +1,6 @@
 use isahc::http::header::{HeaderMap, HeaderName, HeaderValue, CONTENT_TYPE, HOST};
-use mime;
 
-use client::*;
+use crate::client::*;
 
 #[derive(Debug)]
 pub struct Token<'a> {

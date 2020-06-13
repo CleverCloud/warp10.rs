@@ -1,8 +1,3 @@
-extern crate isahc;
-extern crate mime;
-extern crate time;
-extern crate url;
-
 mod client;
 mod data;
 mod error;
@@ -10,9 +5,9 @@ mod response;
 mod token;
 mod writer;
 
-pub use client::*;
-pub use data::*;
-pub use error::*;
-pub use response::*;
-pub use token::*;
-pub use writer::*;
+pub use crate::client::*;
+pub use crate::data::*;
+pub use crate::error::*;
+pub use crate::response::*;
+pub use crate::token::*;
+pub use crate::writer::*;
