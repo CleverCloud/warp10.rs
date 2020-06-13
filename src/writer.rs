@@ -17,7 +17,13 @@ impl<'a> Writer<'a> {
         Self { client, token }
     }
 
-    pub fn post(&self, data: Vec<Data>) -> Result<Warp10Response> {
+    pub async fn post(&self, data: Vec<Data>) -> Result<Warp10Response> {
+        let request = self.post_request(data)?;
+        let response = request.send_async().await?;
+        self.handle_response(response)
+    }
+
+    pub fn post_sync(&self, data: Vec<Data>) -> Result<Warp10Response> {
         let request = self.post_request(data)?;
         let response = request.send()?;
         self.handle_response(response)
