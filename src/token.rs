@@ -16,8 +16,7 @@ impl<'a> Token<'a> {
     pub fn set_headers(&self, headers: &mut HeaderMap) {
         headers.insert(
             CONTENT_TYPE,
-            HeaderValue::from_str(mime::TEXT_PLAIN_UTF_8.as_ref())
-                .expect("failed to parse mime type"),
+            HeaderValue::from_str("text/plain; charset=utf-8").expect("failed to parse mime type"),
         );
         headers.insert(
             HOST,
