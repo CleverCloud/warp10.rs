@@ -1,6 +1,4 @@
-use crate::error::*;
-
-use isahc::{http::status::StatusCode, ReadResponseExt};
+use isahc::http::status::StatusCode;
 
 #[derive(Debug)]
 pub struct Warp10Response {
@@ -9,11 +7,8 @@ pub struct Warp10Response {
 }
 
 impl Warp10Response {
-    pub fn new(response: &mut isahc::http::Response<isahc::Body>) -> Result<Self> {
-        Ok(Self {
-            status: response.status().clone(),
-            payload: response.text()?,
-        })
+    pub fn new(status: StatusCode, payload: String) -> Self {
+        Self { status, payload }
     }
 
     pub fn status(&self) -> StatusCode {
