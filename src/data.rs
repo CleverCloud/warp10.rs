@@ -119,7 +119,7 @@ impl Data {
 
 impl Warp10Serializable for Data {
     fn warp10_serialize(&self) -> String {
-        let date_ms = self.date.timestamp() * 1000000 + (self.date.microsecond() as Long);
+        let date_ms = self.date.unix_timestamp() * 1000000 + (self.date.microsecond() as Long);
         let geo = self
             .geo
             .as_ref()
