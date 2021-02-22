@@ -1,4 +1,4 @@
-use isahc::{http::status::StatusCode, prelude::*};
+use isahc::{http::status::StatusCode, Body, Request, Response, RequestExt};
 
 use crate::client::*;
 use crate::data::*;

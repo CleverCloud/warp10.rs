@@ -1,6 +1,6 @@
 use crate::error::*;
 
-use isahc::{http::status::StatusCode, ResponseExt};
+use isahc::{http::status::StatusCode, ReadResponseExt};
 
 #[derive(Debug)]
 pub struct Warp10Response {
