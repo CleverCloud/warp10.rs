@@ -18,12 +18,12 @@ Reading support should come at some point.
 extern crate time;
 extern crate warp10;
 
-fn warp10_post() -> std::result::Result<warp10::Response, warp10::Error> {
+fn warp10_post() -> std::result::Result<warp10::Warp10Response, warp10::Error> {
     let client = warp10::Client::new("http://localhost:8080/")?;
     let writer = client.get_writer("my_write_token".to_string());
-    let res    = writer.post(vec![
+    let res    = writer.post_sync(vec![
         warp10::Data::new(
-            time::now_utc().to_timespec(),
+            time::OffsetDateTime::now_utc(),
             Some(warp10::GeoValue::new(42.66, 62.18, Some(10))),
             "test data name 2".to_string(),
             vec![
