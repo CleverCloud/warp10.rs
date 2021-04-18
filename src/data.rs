@@ -92,7 +92,7 @@ impl Warp10Serializable for Label {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Data {
-    date: OffsetDateTime,
+    date: Option<OffsetDateTime>,
     geo: Option<GeoValue>,
     name: String,
     labels: Vec<Label>,
@@ -108,7 +108,22 @@ impl Data {
         value: Value,
     ) -> Data {
         Data {
-            date: date,
+            date: Some(date),
+            geo: geo,
+            name: name,
+            labels: labels,
+            value: value,
+        }
+    }
+
+    pub fn new_without_time(
+        geo: Option<GeoValue>,
+        name: String,
+        labels: Vec<Label>,
+        value: Value,
+    ) -> Data {
+        Data {
+            date: None,
             geo: geo,
             name: name,
             labels: labels,
@@ -119,7 +134,6 @@ impl Data {
 
 impl Warp10Serializable for Data {
     fn warp10_serialize(&self) -> String {
-        let date_ms = self.date.unix_timestamp() * 1000000 + (self.date.microsecond() as Long);
         let geo = self
             .geo
             .as_ref()
@@ -136,14 +150,31 @@ impl Warp10Serializable for Data {
                         (acc + ",") + &cur
                     }
                 });
-        format!(
-            "{}/{} {}{{{}}} {}",
-            date_ms,
-            geo,
-            url_encode(&self.name),
-            labels,
-            self.value.warp10_serialize()
-        )
+
+        match self.date {
+            Some(date) => {
+                let date_ms = date.unix_timestamp() * 1000000 + (date.microsecond() as Long);
+                format!(
+                    "{}/{} {}{{{}}} {}",
+                    date_ms,
+                    geo,
+                    url_encode(&self.name),
+                    labels,
+                    self.value.warp10_serialize()
+                )
+            }
+            None => {
+                // In this case the warp10 instance will put the same timestamp for the data point has
+                // the ingestion one.
+                format!(
+                    "/{} {}{{{}}} {}",
+                    geo,
+                    url_encode(&self.name),
+                    labels,
+                    self.value.warp10_serialize()
+                )
+            }
+        }
     }
 }
 
@@ -231,6 +262,19 @@ mod tests {
             )
             .warp10_serialize(),
             "25123456/42.66:32.85/10 original%20name{label1=value1,label%202=value%202} 'foobar'"
+        );
+        assert_eq!(
+            Data::new_without_time(
+                Some(GeoValue::new(42.66, 32.85, Some(10))),
+                "original name".to_string(),
+                vec![
+                    Label::new("label1", "value1"),
+                    Label::new("label 2", "value 2"),
+                ],
+                Value::String("foobar".to_string())
+            )
+            .warp10_serialize(),
+            "/42.66:32.85/10 original%20name{label1=value1,label%202=value%202} 'foobar'"
         );
     }
 }
