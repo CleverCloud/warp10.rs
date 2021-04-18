@@ -49,9 +49,9 @@ pub struct GeoValue {
 impl GeoValue {
     pub fn new(lat: Double, lon: Double, elev: Option<Long>) -> GeoValue {
         GeoValue {
-            lat: lat,
-            lon: lon,
-            elev: elev,
+            lat,
+            lon,
+            elev,
         }
     }
 }
@@ -109,10 +109,10 @@ impl Data {
     ) -> Data {
         Data {
             date: Some(date),
-            geo: geo,
-            name: name,
-            labels: labels,
-            value: value,
+            geo,
+            name,
+            labels,
+            value,
         }
     }
 
@@ -124,10 +124,10 @@ impl Data {
     ) -> Data {
         Data {
             date: None,
-            geo: geo,
-            name: name,
-            labels: labels,
-            value: value,
+            geo,
+            name,
+            labels,
+            value,
         }
     }
 }

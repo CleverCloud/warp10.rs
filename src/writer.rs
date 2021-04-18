@@ -23,7 +23,7 @@ impl<'a> Writer<'a> {
     pub async fn post(&self, data: Vec<Data>) -> Result<Warp10Response> {
         let request = self.post_request::<AsyncBody>(data)?;
         let mut response = request.send_async().await?;
-        let status = response.status().clone();
+        let status = response.status();
         let payload = response.text().await?;
         self.handle_response(status, payload)
     }
@@ -31,7 +31,7 @@ impl<'a> Writer<'a> {
     pub fn post_sync(&self, data: Vec<Data>) -> Result<Warp10Response> {
         let request = self.post_request::<Body>(data)?;
         let mut response = request.send()?;
-        let status = response.status().clone();
+        let status = response.status();
         let payload = response.text()?;
         self.handle_response(status, payload)
     }
