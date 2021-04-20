@@ -11,6 +11,8 @@ pub enum Error {
     HttpBodyError(isahc::Error),
     IoError(io::Error),
     UrlError(url::ParseError),
+    #[cfg(feature = "json")]
+    JsonError(serde_json::Error),
 }
 
 impl fmt::Display for Error {
@@ -25,6 +27,8 @@ impl fmt::Display for Error {
             Error::HttpBodyError(ref err) => write!(f, "Warp10 HTTP body error: {}", err),
             Error::IoError(ref err) => write!(f, "Warp10 IO error: {}", err),
             Error::UrlError(ref err) => write!(f, "Warp10 URL error: {}", err),
+            #[cfg(feature = "json")]
+            Error::JsonError(ref err) => write!(f, "Serialization error: {}", err),
         }
     }
 }
@@ -38,6 +42,8 @@ impl error::Error for Error {
             Error::HttpBodyError(ref err) => Some(err),
             Error::IoError(ref err) => Some(err),
             Error::UrlError(ref err) => Some(err),
+            #[cfg(feature = "json")]
+            Error::JsonError(ref err) => Some(err),
         }
     }
 }
@@ -75,6 +81,13 @@ impl From<io::Error> for Error {
 impl From<url::ParseError> for Error {
     fn from(err: url::ParseError) -> Error {
         Error::UrlError(err)
+    }
+}
+
+#[cfg(feature = "json")]
+impl From<serde_json::Error> for Error {
+    fn from(err: serde_json::Error) -> Self {
+        Error::JsonError(err)
     }
 }
 
