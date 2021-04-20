@@ -48,11 +48,7 @@ pub struct GeoValue {
 
 impl GeoValue {
     pub fn new(lat: Double, lon: Double, elev: Option<Long>) -> GeoValue {
-        GeoValue {
-            lat,
-            lon,
-            elev,
-        }
+        GeoValue { lat, lon, elev }
     }
 }
 

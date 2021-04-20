@@ -5,7 +5,7 @@ use std::{error, fmt, io, result};
 
 #[derive(Debug)]
 pub enum Error {
-    ApiError(Warp10Response),
+    ApiError(Warp10Response, Option<String>),
     HttpError(isahc::http::Error),
     HttpUriError(isahc::http::uri::InvalidUri),
     HttpBodyError(isahc::Error),
@@ -16,7 +16,10 @@ pub enum Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match *self {
-            Error::ApiError(ref resp) => write!(f, "Warp10 API error: {:?}", resp),
+            Error::ApiError(ref resp, Some(ref err)) => {
+                write!(f, "Warp10 API error: {:?}, {}", resp, err)
+            }
+            Error::ApiError(ref resp, None) => write!(f, "Warp10 API error: {:?}", resp),
             Error::HttpError(ref err) => write!(f, "Warp10 HTTP error: {}", err),
             Error::HttpUriError(ref err) => write!(f, "Warp10 HTTP URI error: {}", err),
             Error::HttpBodyError(ref err) => write!(f, "Warp10 HTTP body error: {}", err),
@@ -29,7 +32,7 @@ impl fmt::Display for Error {
 impl error::Error for Error {
     fn cause(&self) -> Option<&dyn error::Error> {
         match *self {
-            Error::ApiError(_) => None,
+            Error::ApiError(_, _) => None,
             Error::HttpError(ref err) => Some(err),
             Error::HttpUriError(ref err) => Some(err),
             Error::HttpBodyError(ref err) => Some(err),
@@ -40,8 +43,8 @@ impl error::Error for Error {
 }
 
 impl Error {
-    pub fn api_error(response: Warp10Response) -> Error {
-        Error::ApiError(response)
+    pub fn api_error(response: Warp10Response, err: Option<String>) -> Error {
+        Error::ApiError(response, err)
     }
 }
 
