@@ -39,6 +39,42 @@ impl Warp10Serializable for Value {
     }
 }
 
+impl From<Int> for Value {
+    fn from(i: Int) -> Self {
+        Self::Int(i)
+    }
+}
+
+impl From<Long> for Value {
+    fn from(l: Long) -> Self {
+        Self::Long(l)
+    }
+}
+
+impl From<Double> for Value {
+    fn from(d: Double) -> Self {
+        Self::Double(d)
+    }
+}
+
+impl From<Boolean> for Value {
+    fn from(b: Boolean) -> Self {
+        Self::Boolean(b)
+    }
+}
+
+impl From<&str> for Value {
+    fn from(s: &str) -> Self {
+        Self::String(s.to_string())
+    }
+}
+
+impl From<String> for Value {
+    fn from(s: String) -> Self {
+        Self::String(s)
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct GeoValue {
     lat: Double,
