@@ -1,3 +1,8 @@
+#[cfg(feature = "json")]
+use crate::error;
+
+#[cfg(feature = "json")]
+use serde::Serialize;
 use time::OffsetDateTime;
 
 fn url_encode(input: &str) -> String {
@@ -72,6 +77,13 @@ impl From<&str> for Value {
 impl From<String> for Value {
     fn from(s: String) -> Self {
         Self::String(s)
+    }
+}
+
+impl Value {
+    #[cfg(feature = "json")]
+    pub fn try_from<T: Serialize>(obj: &T) -> error::Result<Self> {
+        Ok(Self::String(serde_json::to_string(obj)?))
     }
 }
 
@@ -308,5 +320,39 @@ mod tests {
             .warp10_serialize(),
             "/42.66:32.85/10 original%20name{label1=value1,label%202=value%202} 'foobar'"
         );
+    }
+
+    #[test]
+    #[cfg(feature = "json")]
+    fn serialize_structure_into_json_string() -> Result<(), crate::error::Error> {
+        assert_eq!(
+            Value::try_from(&vec![""])?,
+            Value::String("[\"\"]".to_string())
+        );
+
+        let mut map = std::collections::HashMap::new();
+
+        map.insert("baz", "qux'");
+
+        assert_eq!(
+            Value::try_from(&map)?,
+            Value::String("{\"baz\":\"qux'\"}".to_string()),
+        );
+
+        assert_eq!(
+            Data::new_without_time(
+                Some(GeoValue::new(42.66, 32.85, Some(10))),
+                "original name".to_string(),
+                vec![
+                    Label::new("label1", "value1"),
+                    Label::new("label 2", "value 2"),
+                ],
+                Value::try_from(&map)?,
+            )
+                .warp10_serialize(),
+            "/42.66:32.85/10 original%20name{label1=value1,label%202=value%202} '{\"baz\":\"qux'\"}'"
+        );
+
+        Ok(())
     }
 }
