@@ -1,6 +1,6 @@
 [package]
 name          = "warp10"
-version       = "1.2.0"
+version       = "2.0.0"
 edition       = "2018"
 authors       = ["Marc-Antoine Perennou <marc-antoine.perennou@clever-cloud.com>"]
 description   = "Warp10 client for rust"
