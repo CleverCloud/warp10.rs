@@ -281,7 +281,7 @@ mod tests {
     fn serialize_data() {
         assert_eq!(
             Data::new(
-                OffsetDateTime::unix_epoch() + Duration::new(25, 123456789),
+                OffsetDateTime::UNIX_EPOCH + Duration::new(25, 123456789),
                 None,
                 "original name".to_string(),
                 vec![
@@ -295,7 +295,7 @@ mod tests {
         );
         assert_eq!(
             Data::new(
-                OffsetDateTime::unix_epoch() + Duration::new(25, 123456789),
+                OffsetDateTime::UNIX_EPOCH + Duration::new(25, 123456789),
                 Some(GeoValue::new(42.66, 32.85, Some(10))),
                 "original name".to_string(),
                 vec![
