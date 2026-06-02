@@ -6,7 +6,7 @@ use testcontainers::{
 use warp10::{Client, Data, Label, Value};
 
 async fn start_warp10() -> (testcontainers::ContainerAsync<GenericImage>, Client) {
-    let container = GenericImage::new("warp10io/warp10", "latest-ci")
+    let container = GenericImage::new("warp10io/warp10", "3.5.0-ubuntu-ci")
         .with_exposed_port(8080.tcp())
         .with_wait_for(WaitFor::http(
             HttpWaitStrategy::new("/api/v0/check")
