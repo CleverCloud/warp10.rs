@@ -1,0 +1,21 @@
+name: Integration tests
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - run: cargo test -- --ignored --nocapture
+        env:
+          RUST_LOG: info

@@ -1,39 +1,122 @@
-# This is a Rust client for [Warp10 Geo/time series DB](http://www.warp10.io/)
+# warp10
+
+Rust client for [Warp10 Geo/time series DB](http://www.warp10.io/).
 
 [![Crates.io](https://img.shields.io/crates/v/warp10.svg)](https://crates.io/crates/warp10)
 [![LICENSE](https://img.shields.io/github/license/CleverCloud/warp10.rs.svg)](COPYING)
 
 ## Features
 
-At the moment, we support writing to warp10.
+- **Update** - write data points to Warp10
+- **Exec** - execute WarpScript and get structured JSON results with execution metadata
+- **Find** - discover time series matching a selector
 
-Reading support should come at some point.
+## Usage
 
-## Example
+Add to your `Cargo.toml`:
+
+```toml
+[dependencies]
+warp10 = "3"
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+```
+
+## Examples
+
+### Writing data points
 
 ```rust
-extern crate time;
-extern crate warp10;
+use warp10::{Client, Data, GeoValue, Label, Value};
 
-fn warp10_post() -> std::result::Result<warp10::Warp10Response, warp10::Error> {
-    let client = warp10::Client::new("http://localhost:8080/")?;
-    let writer = client.get_writer("my_write_token".to_string());
-    let res    = writer.post_sync(vec![
-        warp10::Data::new(
+#[tokio::main]
+async fn main() -> Result<(), warp10::Error> {
+    let client = Client::builder()
+        .url("http://localhost:8080")
+        .write_token("my_write_token")
+        .build()?;
+
+    let writer = client.get_writer();
+    let response = writer.post(vec![
+        Data::new(
             time::OffsetDateTime::now_utc(),
-            Some(warp10::GeoValue::new(42.66, 62.18, Some(10))),
-            "test data name 2".to_string(),
+            Some(GeoValue::new(42.66, 62.18, Some(10))),
+            "test.data.name".to_string(),
             vec![
-                warp10::Label::new("label 1 name", "label 1 value"),
-                warp10::Label::new("label 2 name", "label 2 value")
+                Label::new("label1", "value1"),
+                Label::new("label2", "value2"),
             ],
-            warp10::Value::String("Test warp10 awesome value".to_string())
-        )
-    ])?;
-    Ok(res)
-}
+            Value::String("hello warp10".to_string()),
+        ),
+    ]).await?;
 
-fn main() {
-    println!("{:?}", warp10_post());
+    println!("status: {:?}", response.status());
+    Ok(())
 }
 ```
+
+### Executing WarpScript
+
+```rust
+use warp10::Client;
+
+#[tokio::main]
+async fn main() -> Result<(), warp10::Error> {
+    let client = Client::builder().build()?;
+
+    let response = client.exec("1 2 + 3 4 +").await?;
+
+    println!("result: {}", response.body);       // [3, 7]
+    println!("elapsed: {:?}", response.meta.elapsed);
+    println!("ops: {:?}", response.meta.ops);
+    println!("fetched: {:?}", response.meta.fetched);
+    Ok(())
+}
+```
+
+### Finding time series
+
+```rust
+use warp10::Client;
+
+#[tokio::main]
+async fn main() -> Result<(), warp10::Error> {
+    let client = Client::builder()
+        .read_token("my_read_token")
+        .build()?;
+
+    let response = client.find("~test.*{label1=value1}").await?;
+
+    for series in response.series() {
+        println!("{}", series);
+    }
+    Ok(())
+}
+```
+
+### Custom reqwest client
+
+```rust
+use warp10::Client;
+
+#[tokio::main]
+async fn main() -> Result<(), warp10::Error> {
+    let http = reqwest::Client::builder()
+        .timeout(std::time::Duration::from_secs(30))
+        .build()
+        .unwrap();
+
+    let client = Client::builder()
+        .url("http://warp10.example.com:8080")
+        .write_token("my_token")
+        .read_token("my_token")
+        .http_client(http)
+        .build()?;
+
+    // use client...
+    Ok(())
+}
+```
+
+## MSRV
+
+The minimum supported Rust version is **1.88.0**.

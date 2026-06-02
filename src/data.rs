@@ -1,9 +1,9 @@
-#[cfg(feature = "json")]
-use crate::error;
-
-#[cfg(feature = "json")]
+#[cfg(feature = "serde")]
 use serde::Serialize;
 use time::OffsetDateTime;
+
+#[cfg(feature = "serde")]
+use crate::error;
 
 fn url_encode(input: &str) -> String {
     let mut s = String::new();
@@ -81,7 +81,7 @@ impl From<String> for Value {
 }
 
 impl Value {
-    #[cfg(feature = "json")]
+    #[cfg(feature = "serde")]
     pub fn try_from<T: Serialize>(obj: &T) -> error::Result<Self> {
         Ok(Self::String(serde_json::to_string(obj)?))
     }
@@ -106,9 +106,7 @@ impl Warp10Serializable for GeoValue {
             "{}:{}/{}",
             self.lat,
             self.lon,
-            self.elev
-                .map(|e| e.to_string())
-                .unwrap_or_else(|| "".to_string())
+            self.elev.map(|e| e.to_string()).unwrap_or_default()
         )
     }
 }
@@ -208,8 +206,6 @@ impl Warp10Serializable for Data {
                 )
             }
             None => {
-                // In this case the warp10 instance will put the same timestamp for the data point has
-                // the ingestion one.
                 format!(
                     "/{} {}{{{}}} {}",
                     geo,
@@ -323,7 +319,7 @@ mod tests {
     }
 
     #[test]
-    #[cfg(feature = "json")]
+    #[cfg(feature = "serde")]
     fn serialize_structure_into_json_string() -> Result<(), crate::error::Error> {
         assert_eq!(
             Value::try_from(&vec![""])?,
@@ -349,7 +345,7 @@ mod tests {
                 ],
                 Value::try_from(&map)?,
             )
-                .warp10_serialize(),
+            .warp10_serialize(),
             "/42.66:32.85/10 original%20name{label1=value1,label%202=value%202} '{\"baz\":\"qux'\"}'"
         );
 
