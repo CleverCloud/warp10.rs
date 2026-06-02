@@ -1,0 +1,8 @@
+# Advisories in dev-dependencies only (testcontainers -> bollard -> hickory-proto, tokio-tar)
+# These do not affect the published crate.
+[advisories]
+ignore = [
+    "RUSTSEC-2026-0119", # hickory-proto CPU exhaustion (dev-dep)
+    "RUSTSEC-2026-0118", # hickory-proto NSEC3 loop (dev-dep)
+    "RUSTSEC-2025-0111", # tokio-tar file smuggling (dev-dep)
+]
