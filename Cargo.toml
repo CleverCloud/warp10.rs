@@ -2,7 +2,7 @@
 name          = "warp10"
 version       = "3.0.0"
 edition       = "2024"
-rust-version  = "1.85.0"
+rust-version  = "1.88.0"
 authors       = ["Marc-Antoine Perennou <marc-antoine.perennou@clever-cloud.com>", "Rémi COLLIGNON <remi.collignon-ducret@clever-cloud.com>"]
 description   = "Warp10 client for rust"
 repository    = "https://github.com/CleverCloud/warp10.rs"

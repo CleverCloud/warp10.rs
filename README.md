@@ -119,4 +119,4 @@ async fn main() -> Result<(), warp10::Error> {
 
 ## MSRV
 
-The minimum supported Rust version is **1.85.0**.
+The minimum supported Rust version is **1.88.0**.
