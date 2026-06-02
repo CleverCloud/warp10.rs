@@ -21,6 +21,8 @@ url              = "2"
 serde            = { version = "1", optional = true, features = ["derive"] }
 
 [dev-dependencies]
+env_logger = "0.11"
+log = "0.4"
 testcontainers = { version = "0.23", features = ["http_wait"] }
 tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
 

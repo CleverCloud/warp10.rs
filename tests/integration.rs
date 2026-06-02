@@ -1,11 +1,16 @@
 use testcontainers::{
     GenericImage, ImageExt,
-    core::{ContainerPort, IntoContainerPort, WaitFor, wait::HttpWaitStrategy},
+    core::{
+        ContainerPort, IntoContainerPort, WaitFor,
+        logs::consumer::logging_consumer::LoggingConsumer, wait::HttpWaitStrategy,
+    },
     runners::AsyncRunner,
 };
 use warp10::{Client, Data, Label, Value};
 
 async fn start_warp10() -> (testcontainers::ContainerAsync<GenericImage>, Client) {
+    let _ = env_logger::builder().is_test(true).try_init();
+
     let container = GenericImage::new("warp10io/warp10", "3.5.0-ubuntu-ci")
         .with_exposed_port(8080.tcp())
         .with_wait_for(WaitFor::http(
@@ -14,6 +19,12 @@ async fn start_warp10() -> (testcontainers::ContainerAsync<GenericImage>, Client
                 .with_expected_status_code(200u16),
         ))
         .with_startup_timeout(std::time::Duration::from_secs(60))
+        .with_log_consumer(
+            LoggingConsumer::new()
+                .with_stdout_level(log::Level::Info)
+                .with_stderr_level(log::Level::Warn)
+                .with_prefix("[warp10]"),
+        )
         .start()
         .await
         .expect("failed to start warp10 container");
